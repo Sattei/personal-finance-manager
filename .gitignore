@@ -1,0 +1,43 @@
+# Maven
+target/
+HELP.md
+
+# Environment and logs
+.env
+*.log
+
+# Temporary session files
+user1_session.txt
+user2_session.txt
+
+# VS Code
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse / STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Build directories
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
