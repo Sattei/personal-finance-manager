@@ -12,6 +12,7 @@ import com.syfe.personalfinancemanager.repository.CategoryRepository;
 import com.syfe.personalfinancemanager.repository.TransactionRepository;
 import com.syfe.personalfinancemanager.repository.UserRepository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,7 +55,9 @@ public class CategoryService {
         if (categoryRepository.existsByNameAndUser(request.getName(), user)
                 || categoryRepository.existsByNameAndIsDefaultTrue(request.getName())) {
 
-            throw new ConflictException("Category already exists");
+            throw new ConflictException(
+                    "Category already exists"
+            );
         }
 
         Category category = new Category(
@@ -64,14 +67,25 @@ public class CategoryService {
                 user
         );
 
-        Category savedCategory =
-                categoryRepository.save(category);
+        try {
 
-        return new CategoryResponse(
-                savedCategory.getName(),
-                savedCategory.getType(),
-                true
-        );
+            Category savedCategory =
+                    categoryRepository.save(category);
+
+            categoryRepository.flush();
+
+            return new CategoryResponse(
+                    savedCategory.getName(),
+                    savedCategory.getType(),
+                    true
+            );
+
+        } catch (DataIntegrityViolationException exception) {
+
+            throw new ConflictException(
+                    "Category already exists"
+            );
+        }
     }
 
     /**
@@ -130,6 +144,7 @@ public class CategoryService {
         User user = getUser(username);
 
         if (categoryRepository.existsByNameAndIsDefaultTrue(name)) {
+
             throw new ForbiddenException(
                     "Default categories cannot be deleted"
             );
@@ -145,6 +160,7 @@ public class CategoryService {
                         );
 
         if (transactionRepository.existsByCategory(category)) {
+
             throw new BadRequestException(
                     "Category is currently used by a transaction"
             );

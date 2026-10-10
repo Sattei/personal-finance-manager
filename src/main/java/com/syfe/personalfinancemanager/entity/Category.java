@@ -3,7 +3,15 @@ package com.syfe.personalfinancemanager.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "categories")
+@Table(
+        name = "categories",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_category_user_name",
+                        columnNames = {"user_id", "name"}
+                )
+        }
+)
 public class Category {
 
     @Id
@@ -26,7 +34,12 @@ public class Category {
     public Category() {
     }
 
-    public Category(String name, String type, boolean isDefault, User user) {
+    public Category(
+            String name,
+            String type,
+            boolean isDefault,
+            User user) {
+
         this.name = name;
         this.type = type;
         this.isDefault = isDefault;

@@ -19,9 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Handles user registration and session-based authentication endpoints.
- */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -56,7 +53,8 @@ public class AuthController {
     }
 
     /**
-     * Authenticates a user and stores the resulting security context in the session.
+     * Authenticates a user, rotates any existing session ID,
+     * and stores the resulting security context in the session.
      *
      * @param request validated login credentials
      * @param httpRequest current HTTP request
@@ -71,6 +69,13 @@ public class AuthController {
 
         Authentication authentication =
                 authService.login(request);
+
+        HttpSession session =
+                httpRequest.getSession(false);
+
+        if (session != null) {
+            httpRequest.changeSessionId();
+        }
 
         SecurityContext context =
                 SecurityContextHolder.createEmptyContext();

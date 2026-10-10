@@ -4,6 +4,7 @@ import com.syfe.personalfinancemanager.dto.auth.LoginRequest;
 import com.syfe.personalfinancemanager.dto.auth.RegisterRequest;
 import com.syfe.personalfinancemanager.dto.auth.RegisterResponse;
 import com.syfe.personalfinancemanager.entity.User;
+import com.syfe.personalfinancemanager.exception.BadRequestException;
 import com.syfe.personalfinancemanager.exception.ConflictException;
 import com.syfe.personalfinancemanager.repository.UserRepository;
 
@@ -12,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Provides business logic for user registration
@@ -41,15 +44,31 @@ public class AuthService {
      * @param request registration information
      * @return registration response containing the created user ID
      * @throws ConflictException if the username already exists
+     * @throws BadRequestException if the password exceeds BCrypt limits
      */
     public RegisterResponse register(RegisterRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new ConflictException("Username already exists");
+            throw new ConflictException(
+                    "Username already exists"
+            );
+        }
+
+        int passwordBytes =
+                request.getPassword()
+                        .getBytes(StandardCharsets.UTF_8)
+                        .length;
+
+        if (passwordBytes > 72) {
+            throw new BadRequestException(
+                    "Password must not exceed 72 bytes"
+            );
         }
 
         String encodedPassword =
-                passwordEncoder.encode(request.getPassword());
+                passwordEncoder.encode(
+                        request.getPassword()
+                );
 
         User user = new User(
                 request.getUsername(),
@@ -58,7 +77,8 @@ public class AuthService {
                 request.getPhoneNumber()
         );
 
-        User savedUser = userRepository.save(user);
+        User savedUser =
+                userRepository.save(user);
 
         return new RegisterResponse(
                 "User registered successfully",

@@ -1,6 +1,7 @@
 package com.syfe.personalfinancemanager.dto.goal;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Future;
 
 import java.math.BigDecimal;
@@ -12,6 +13,11 @@ public class UpdateGoalRequest {
             value = "0.0",
             inclusive = false,
             message = "Target amount must be positive"
+    )
+    @Digits(
+            integer = 17,
+            fraction = 2,
+            message = "Target amount can have at most 2 decimal places"
     )
     private BigDecimal targetAmount;
 

@@ -1,9 +1,11 @@
 package com.syfe.personalfinancemanager.dto.goal;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +13,10 @@ import java.time.LocalDate;
 public class CreateGoalRequest {
 
     @NotBlank(message = "Goal name is required")
+    @Size(
+            max = 255,
+            message = "Goal name must not exceed 255 characters"
+    )
     private String goalName;
 
     @NotNull(message = "Target amount is required")
@@ -18,6 +24,11 @@ public class CreateGoalRequest {
             value = "0.0",
             inclusive = false,
             message = "Target amount must be positive"
+    )
+    @Digits(
+            integer = 17,
+            fraction = 2,
+            message = "Target amount can have at most 2 decimal places"
     )
     private BigDecimal targetAmount;
 

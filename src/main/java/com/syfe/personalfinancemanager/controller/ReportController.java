@@ -2,6 +2,7 @@ package com.syfe.personalfinancemanager.controller;
 
 import com.syfe.personalfinancemanager.dto.report.MonthlyReportResponse;
 import com.syfe.personalfinancemanager.dto.report.YearlyReportResponse;
+import com.syfe.personalfinancemanager.exception.BadRequestException;
 import com.syfe.personalfinancemanager.service.ReportService;
 
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,14 @@ public class ReportController {
             @PathVariable int month,
             Authentication authentication) {
 
+        validateYear(year);
+
+        if (month < 1 || month > 12) {
+            throw new BadRequestException(
+                    "Month must be between 1 and 12"
+            );
+        }
+
         MonthlyReportResponse response =
                 reportService.getMonthlyReport(
                         year,
@@ -58,6 +67,8 @@ public class ReportController {
             @PathVariable int year,
             Authentication authentication) {
 
+        validateYear(year);
+
         YearlyReportResponse response =
                 reportService.getYearlyReport(
                         year,
@@ -65,5 +76,14 @@ public class ReportController {
                 );
 
         return ResponseEntity.ok(response);
+    }
+
+    private void validateYear(int year) {
+
+        if (year < 1 || year > 9999) {
+            throw new BadRequestException(
+                    "Year must be between 1 and 9999"
+            );
+        }
     }
 }
