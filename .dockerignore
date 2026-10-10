@@ -1,0 +1,10 @@
+target/
+.git/
+.github/
+.vscode/
+.idea/
+*.iml
+*.log
+.env
+user1_session.txt
+user2_session.txt
